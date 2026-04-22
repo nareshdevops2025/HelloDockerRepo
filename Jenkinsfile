@@ -1,0 +1,31 @@
+pipeline {
+  agent any
+
+    tools {
+        maven 'maven-3'
+        jdk 'JDK'
+    }
+stages {
+    stage('Build') {
+      steps {
+        sh 'mvn clean package'
+      }
+    }
+    stage('SonarQube') {
+      steps {
+        sh 'mvn sonar:sonar'
+      }
+    }
+    stage('Docker Build') {
+      steps {
+        sh 'docker build -t hello:latest -f Dockerfile .'
+      }
+    }
+    stage('Security Scan') {
+      steps {
+        sh 'trivy image hello:latest'
+      }
+    }
+  
+  }
+}
